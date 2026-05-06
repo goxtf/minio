@@ -37,7 +37,7 @@ func Main(args []string) {
 		return nil
 	}
 
-	// Run the app.
+	// Run the app - exit with code 1 on any error.
 	if err := app.Run(args); err != nil {
 		os.Exit(1) //nolint:gocritic
 	}
@@ -64,6 +64,8 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
 	app.CustomAppHelpTemplate = minioHelpTemplate
 	// Hide the version flag from the help output to reduce noise.
 	app.HideVersion = true
+	// Show help if no subcommand is provided, rather than silently doing nothing.
+	app.Action = cli.ShowAppHelp
 	return app
 }
 
