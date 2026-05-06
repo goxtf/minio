@@ -66,6 +66,8 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
 	app.HideVersion = true
 	// Show help if no subcommand is provided, rather than silently doing nothing.
 	app.Action = cli.ShowAppHelp
+	// Enable bash/zsh completion support.
+	app.EnableBashCompletion = true
 	return app
 }
 
