@@ -1,9 +1,12 @@
-name: Functional Tests
+name: Go
 
 on:
   pull_request:
     branches:
-      - master
+      - main
+  push:
+    branches:
+      - main
 
 # This ensures that previous jobs for the PR are canceled when the PR is
 # updated.
@@ -11,32 +14,44 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-
 jobs:
   build:
-    name: Go ${{ matrix.go-version }} on ${{ matrix.os }} - healing
+    name: Test on Go ${{ matrix.go-version }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go-version: [1.24.x]
-        os: [ubuntu-latest]
+        go-version: ["1.21", "1.22"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
-          check-latest: true
-      - name: Build on ${{ matrix.os }}
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          CGO_ENABLED: 0
-          GO111MODULE: on
-          MINIO_KMS_SECRET_KEY: "my-minio-key:OSMM+vkKUTCvQs9YL/CVMIMt43HFhkUpqJxTmGl6rYw="
-          MINIO_KMS_AUTO_ENCRYPTION: on
-        run: |
-          sudo sysctl net.ipv6.conf.all.disable_ipv6=0
-          sudo sysctl net.ipv6.conf.default.disable_ipv6=0
-          make verify
-          make test-timeout
+
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test ./...
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: false
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
