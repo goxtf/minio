@@ -62,6 +62,8 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
   data workloads.`
 	app.Commands = appCmds
 	app.CustomAppHelpTemplate = minioHelpTemplate
+	// Hide the version flag from the help output to reduce noise.
+	app.HideVersion = true
 	return app
 }
 
