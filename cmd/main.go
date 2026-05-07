@@ -93,6 +93,12 @@ EXAMPLES:
   Start a server with a custom address:
     $ minio server --address :9090 /data
 
+  Start a distributed setup with 4 nodes (erasure coding):
+    $ minio server http://node{1...4}/data
+
+  Enable TLS with custom certs directory:
+    $ minio server --certs-dir /etc/minio/certs /data
+
 VERSION:
   {{.Version}}
 
