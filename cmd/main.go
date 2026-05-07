@@ -72,6 +72,8 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
 }
 
 // minioHelpTemplate is the custom help template for the minio CLI.
+// NOTE(personal): Added EXAMPLES section to make it easier to remember
+// common invocations without digging through the docs every time.
 var minioHelpTemplate = `NAME:
   {{.Name}} - {{.Usage}}
 
@@ -84,6 +86,13 @@ USAGE:
 COMMANDS:
   {{range .Commands}}{{join .Names ", "}}{{ "\t" }}{{.Usage}}
   {{end}}
+EXAMPLES:
+  Start a standalone server:
+    $ minio server /data
+
+  Start a server with a custom address:
+    $ minio server --address :9090 /data
+
 VERSION:
   {{.Version}}
 
